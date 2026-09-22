@@ -14,7 +14,6 @@ export default function App() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [currentTab, setCurrentTab] = useState('generator');
   
-  // Gestione Categorie e QR Dinamici (Pro)
   const [selectedCategory, setSelectedCategory] = useState('Generale');
   const [filterCategory, setFilterCategory] = useState('Tutti');
   const [isDynamic, setIsDynamic] = useState(false);
@@ -30,7 +29,6 @@ export default function App() {
     setScanned(true);
     let decodedData = data;
     
-    // Logica QR Dinamico: se è un nostro codice simulato, reindirizza
     if (data.includes('qr-pro-dynamic/')) {
       decodedData = "👉 Link Reindirizzato a Distanza: https://tuositupro.com";
     }
@@ -130,7 +128,6 @@ export default function App() {
         <ScrollView style={styles.content}>
           <TextInput style={styles.input} placeholder="Inserisci il link o il testo qui..." placeholderTextColor="#888" value={text} onChangeText={setText} />
           
-          {/* Opzione Tipo QR */}
           <View style={styles.rowOptions}>
             <TouchableOpacity style={[styles.optionBadge, !isDynamic && styles.activeBadge]} onPress={() => setIsDynamic(false)}>
               <Text style={styles.badgeText}>QR Statico</Text>
@@ -140,7 +137,6 @@ export default function App() {
             </TouchableOpacity>
           </View>
 
-          {/* Scelta Categoria */}
           <Text style={styles.subLabel}>Seleziona Categoria Archivio:</Text>
           <View style={styles.rowOptions}>
             {['Generale', 'Lavoro', 'Social'].map(cat => (
@@ -160,13 +156,12 @@ export default function App() {
                 value={text} 
                 size={180} 
                 color={qrColor} 
-                backgroundColor={bgColor}
+                backgroundColor="#FFFFFF"
                 logo={logoOption ? { uri: 'https://reactnative.dev' } : null}
                 logoSize={40}
                 logoBackgroundColor='transparent'
               />
               
-              {/* Opzioni di personalizzazione avanzata */}
               <View style={styles.proOptionsZone}>
                 <Text style={styles.proSectionTitle}>🎨 Tavolozza Colori (Premium):</Text>
                 <View style={styles.colorPaletteRow}>
@@ -211,4 +206,11 @@ export default function App() {
           <Text style={styles.sectionTitle}>Filtra per Categoria:</Text>
           <View style={styles.rowOptions}>
             {['Tutti', 'Generale', 'Lavoro', 'Social'].map(cat => (
-              <TouchableOpacity key={cat} style={[styles.optionBadge, filterCategory === cat && styles.activeBadge]} onPress={() => handlePremiumFeature(() => setFilterCategory(cat))}>}
+              <TouchableOpacity key={cat} style={[styles.optionBadge, filterCategory === cat && styles.activeBadge]} onPress={() => handlePremiumFeature(() => setFilterCategory(cat))}>
+                <Text style={styles.badgeText}>{cat}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+      )}
+          <Text style={styles.sectionTitle}>I tuoi Codici ({filteredHistory.length})</Text>}
