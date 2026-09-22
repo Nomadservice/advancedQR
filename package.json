@@ -6,6 +6,7 @@
     "expo-screen-capture": "*",
     "react-native-screens": "*",
     "react-native-qrcode-svg": "*",
-    "react-native-safe-area-context": "*"
+    "react-native-safe-area-context": "*",
+    "expo-ads-admob": "*"
   }
 }
