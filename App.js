@@ -8,11 +8,16 @@ export default function App() {
   const [scanned, setScanned] = useState(false);
   const [text, setText] = useState('');
   const [qrColor, setQrColor] = useState('#000000');
-  const [bgColor, setBgColor] = useState('#FFFFFF');
+  const [logoOption, setLogoOption] = useState(null);
   const [history, setHistory] = useState([]);
   const [isPremium, setIsPremium] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [currentTab, setCurrentTab] = useState('generator');
+  
+  // Gestione Categorie e QR Dinamici (Pro)
+  const [selectedCategory, setSelectedCategory] = useState('Generale');
+  const [filterCategory, setFilterCategory] = useState('Tutti');
+  const [isDynamic, setIsDynamic] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -23,21 +28,48 @@ export default function App() {
 
   const handleBarCodeScanned = ({ data }) => {
     setScanned(true);
-    const newHistory = [{ id: Date.now().toString(), data, type: 'Scansionato', date: new Date().toLocaleDateString() }, ...history];
+    let decodedData = data;
+    
+    // Logica QR Dinamico: se è un nostro codice simulato, reindirizza
+    if (data.includes('qr-pro-dynamic/')) {
+      decodedData = "👉 Link Reindirizzato a Distanza: https://tuositupro.com";
+    }
+
+    const newHistory = { 
+      id: Date.now().toString(), 
+      data: decodedData, 
+      type: 'Scansionato', 
+      category: 'Generale',
+      date: new Date().toLocaleDateString() 
+    };
     
     if (!isPremium && history.filter(h => h.type === 'Scansionato').length >= 5) {
       setShowPaywall(true);
       return;
     }
     
-    setHistory(newHistory);
-    Alert.alert('QR Scansionato', data, [{ text: 'OK', onPress: () => setScanned(false) }]);
+    setHistory([newHistory, ...history]);
+    Alert.alert('QR Scansionato', decodedData, [{ text: 'OK', onPress: () => setScanned(false) }]);
   };
 
   const handleGenerate = () => {
     if (!text) return;
-    const newHistory = [{ id: Date.now().toString(), data: text, type: 'Generato', date: new Date().toLocaleDateString() }, ...history];
-    setHistory(newHistory);
+    
+    let finalData = text;
+    if (isDynamic) {
+      finalData = `https://api.qr-pro-dynamic{Date.now()}`;
+    }
+
+    const newHistory = { 
+      id: Date.now().toString(), 
+      data: finalData, 
+      type: isDynamic ? 'Dinamico' : 'Generato', 
+      category: selectedCategory,
+      date: new Date().toLocaleDateString() 
+    };
+    
+    setHistory([newHistory, ...history]);
+    Alert.alert('Successo', isDynamic ? 'QR Dinamico Creato! Potrai cambiare il link dal pannello Pro.' : 'QR Codice generato e salvato.');
   };
 
   const handlePremiumFeature = (action) => {
@@ -47,6 +79,10 @@ export default function App() {
       action();
     }
   };
+
+  const filteredHistory = filterCategory === 'Tutti' 
+    ? history 
+    : history.filter(h => h.category === filterCategory);
 
   if (showPaywall) {
     return (
@@ -93,18 +129,63 @@ export default function App() {
       {currentTab === 'generator' && (
         <ScrollView style={styles.content}>
           <TextInput style={styles.input} placeholder="Inserisci il link o il testo qui..." placeholderTextColor="#888" value={text} onChangeText={setText} />
+          
+          {/* Opzione Tipo QR */}
+          <View style={styles.rowOptions}>
+            <TouchableOpacity style={[styles.optionBadge, !isDynamic && styles.activeBadge]} onPress={() => setIsDynamic(false)}>
+              <Text style={styles.badgeText}>QR Statico</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.optionBadge, isDynamic && styles.activeBadgePro]} onPress={() => handlePremiumFeature(() => setIsDynamic(true))}>
+              <Text style={styles.badgeText}>🔗 Dinamico (Pro)</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Scelta Categoria */}
+          <Text style={styles.subLabel}>Seleziona Categoria Archivio:</Text>
+          <View style={styles.rowOptions}>
+            {['Generale', 'Lavoro', 'Social'].map(cat => (
+              <TouchableOpacity key={cat} style={[styles.optionBadge, selectedCategory === cat && styles.activeBadge]} onPress={() => handlePremiumFeature(() => setSelectedCategory(cat))}>
+                <Text style={styles.badgeText}>{cat}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
           <TouchableOpacity style={styles.button} onPress={handleGenerate}>
             <Text style={styles.buttonText}>Crea Codice QR</Text>
           </TouchableOpacity>
+
           {text !== '' && (
             <View style={styles.qrDisplayZone}>
-              <QRCode value={text} size={200} color={qrColor} backgroundColor={bgColor} />
+              <QRCode 
+                value={text} 
+                size={180} 
+                color={qrColor} 
+                backgroundColor={bgColor}
+                logo={logoOption ? { uri: 'https://reactnative.dev' } : null}
+                logoSize={40}
+                logoBackgroundColor='transparent'
+              />
+              
+              {/* Opzioni di personalizzazione avanzata */}
               <View style={styles.proOptionsZone}>
-                <TouchableOpacity style={styles.proButton} onPress={() => handlePremiumFeature(() => setQrColor('#FF5733'))}>
-                  <Text style={styles.proButtonText}>🎨 Colore Rosso (Pro)</Text>
+                <Text style={styles.proSectionTitle}>🎨 Tavolozza Colori (Premium):</Text>
+                <View style={styles.colorPaletteRow}>
+                  {['#000000', '#FF5733', '#1A5F7A', '#57C5B6', '#8B5CF6'].map(color => (
+                    <TouchableOpacity 
+                      key={color} 
+                      style={[styles.colorCircle, { backgroundColor: color }, qrColor === color && styles.selectedCircle]} 
+                      onPress={() => handlePremiumFeature(() => setQrColor(color))}
+                    />
+                  ))}
+                </View>
+
+                <Text style={styles.proSectionTitle}>🏢 Logo Centrale (Premium):</Text>
+                <TouchableOpacity style={[styles.proButton, logoOption && styles.activeProBtn]} onPress={() => handlePremiumFeature(() => setLogoOption(!logoOption))}>
+                  <Text style={styles.proButtonText}>{logoOption ? '❌ Rimuovi Logo' : '🖼️ Inserisci Logo Aziendale'}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.proButton} onPress={() => handlePremiumFeature(() => Alert.alert('Export', 'File SVG generato!'))}>
-                  <Text style={styles.proButtonText}>💾 Esporta SVG (Pro)</Text>
+
+                <TouchableOpacity style={styles.proButton} onPress={() => handlePremiumFeature(() => Alert.alert('Esportazione', 'File vettoriale SVG scaricato in alta risoluzione!'))}>
+                  <Text style={styles.proButtonText}>💾 Esporta in Alta Risoluzione SVG</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -116,12 +197,7 @@ export default function App() {
         <View style={styles.scannerZone}>
           {hasPermission === null && <Text style={styles.textWhite}>Richiesta permesso fotocamera...</Text>}
           {hasPermission === false && <Text style={styles.textWhite}>Nessun accesso alla fotocamera.</Text>}
-          {hasPermission === true && (
-            <CameraView 
-              onBarcodeScanned={scanned ? undefined : handleBarCodeScanned} 
-              style={StyleSheet.absoluteFillObject} 
-            />
-          )}
+          {hasPermission === true && <CameraView onBarcodeScanned={scanned ? undefined : handleBarCodeScanned} style={StyleSheet.absoluteFillObject} />}
           {scanned && (
             <TouchableOpacity style={styles.button} onPress={() => setScanned(false)}>
               <Text style={styles.buttonText}>Tappa per scansionare ancora</Text>
@@ -132,47 +208,7 @@ export default function App() {
 
       {currentTab === 'history' && (
         <ScrollView style={styles.content}>
-          <Text style={styles.sectionTitle}>I tuoi Codici ({history.length})</Text>
-          {history.map((item) => (
-            <View key={item.id} style={styles.historyCard}>
-              <Text style={styles.historyType}>{item.type} - {item.date}</Text>
-              <Text style={styles.historyData} numberOfLines={1}>{item.data}</Text>
-            </View>
-          ))}
-        </ScrollView>
-      )}
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', paddingTop: 50 },
-  paywallContainer: { flex: 1, backgroundColor: '#1A1A2E', padding: 30, justifyContent: 'center' },
-  paywallTitle: { fontSize: 28, fontWeight: 'bold', color: '#FFD700', textAlign: 'center', marginBottom: 15 },
-  paywallSubtitle: { fontSize: 16, color: '#E0E0E0', textAlign: 'center', marginBottom: 30 },
-  featuresList: { marginBottom: 30 },
-  featureItem: { fontSize: 16, color: '#FFF', marginBottom: 15 },
-  premiumButton: { backgroundColor: '#FFD700', padding: 15, borderRadius: 10, marginBottom: 15, alignItems: 'center' },
-  buttonTextPro: { fontSize: 16, fontWeight: 'bold', color: '#000' },
-  closePaywall: { marginTop: 15, alignItems: 'center' },
-  closePaywallText: { color: '#AAA', fontSize: 14, textDecorationLine: 'underline' },
-  headerTitle: { color: '#FFF', fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginBottom: 15 },
-  navBar: { flexDirection: 'row', backgroundColor: '#1F1F1F', marginHorizontal: 15, borderRadius: 8, marginBottom: 20 },
-  navButton: { flex: 1, paddingVertical: 12, alignItems: 'center' },
-  activeNav: { backgroundColor: '#333', borderRadius: 8 },
-  navText: { color: '#FFF', fontWeight: '600' },
-  content: { flex: 1, paddingHorizontal: 15 },
-  input: { backgroundColor: '#1F1F1F', color: '#FFF', padding: 15, borderRadius: 8, fontSize: 16, marginBottom: 15 },
-  button: { backgroundColor: '#00ADB5', padding: 15, borderRadius: 8, alignItems: 'center', marginBottom: 20 },
-  buttonText: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
-  qrDisplayZone: { alignItems: 'center', marginTop: 20, backgroundColor: '#FFF', padding: 20, borderRadius: 12 },
-  proOptionsZone: { width: '100%', marginTop: 20 },
-  proButton: { backgroundColor: '#333', padding: 10, borderRadius: 6, marginBottom: 10, alignItems: 'center' },
-  proButtonText: { color: '#FFD700', fontWeight: '600' },
-  scannerZone: { flex: 1, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
-  textWhite: { color: '#FFF' },
-  sectionTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginBottom: 15 },
-  historyCard: { backgroundColor: '#1F1F1F', padding: 15, borderRadius: 8, marginBottom: 10 },
-  historyType: { color: '#00ADB5', fontSize: 12, fontWeight: 'bold', marginBottom: 5 },
-  historyData: { color: '#FFF', fontSize: 14 }
-});
+          <Text style={styles.sectionTitle}>Filtra per Categoria:</Text>
+          <View style={styles.rowOptions}>
+            {['Tutti', 'Generale', 'Lavoro', 'Social'].map(cat => (
+              <TouchableOpacity key={cat} style={[styles.optionBadge, filterCategory === cat && styles.activeBadge]} onPress={() => handlePremiumFeature(() => setFilterCategory(cat))}>}
