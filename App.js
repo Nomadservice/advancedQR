@@ -14,20 +14,17 @@ export default function App() {
   const [history, setHistory] = useState([]);
   const [isPremium, setIsPremium] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
-  const [currentTab, setCurrentTab] = useState('generator');
+  const [currentTab, setCurrentTab] = useState('scanner'); // Avvio prioritario sullo Scanner
   const [selectedCategory, setSelectedCategory] = useState('Generale');
   const [filterCategory, setFilterCategory] = useState('Tutti');
   const [isDynamic, setIsDynamic] = useState(false);
 
-  // Attivazione protezione screenshot e permessi fotocamera
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
     })();
-    
-    // Attiva il blocco screenshot sicuro su Android e iOS
-    ScreenCapture.preventScreenCaptureAsync();
+    ScreenCapture.preventScreenCaptureAsync(); // Blocca screenshot nativi
   }, []);
 
   const handleBarCodeScanned = ({ data }) => {
@@ -48,27 +45,44 @@ export default function App() {
   const handlePremiumFeature = (action) => { isPremium ? action() : setShowPaywall(true); };
   const filteredHistory = filterCategory === 'Tutti' ? history : history.filter(h => h.category === filterCategory);
 
+  const handleWatchAd = () => {
+    Alert.alert(
+      "Caricamento Video",
+      "Riproduzione annuncio pubblicitario in corso (15 secondi)...",
+      [
+        {
+          text: "Completa Annuncio",
+          onPress: () => {
+            setIsPremium(true); 
+            setShowPaywall(false);
+            Alert.alert("Premio Riscattato", "Funzioni Pro sbloccate per questa sessione grazie alla pubblicità!");
+          }
+        }
+      ]
+    );
+  };
+
   if (showPaywall) {
-    return <Paywall setIsPremium={setIsPremium} setShowPaywall={setShowPaywall} />;
+    return <Paywall setIsPremium={setIsPremium} setShowPaywall={setShowPaywall} onWatchAd={handleWatchAd} />;
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>QR PREMIUM STUDIO {isPremium ? '👑 PRO' : ''}</Text>
+      <Text style={styles.title}>ADVANCED QR {isPremium ? '👑 PRO' : ''}</Text>
       <View style={styles.nav}>
-        {['generator', 'scanner', 'history'].map(t => (
+        {['scanner', 'generator', 'history'].map(t => (
           <TouchableOpacity key={t} style={[styles.navB, currentTab === t && styles.navAct]} onPress={() => setCurrentTab(t)}>
-            <Text style={styles.whiteTxt}>{t === 'generator' ? 'Genera' : t === 'scanner' ? 'Scansiona' : 'Archivio'}</Text>
+            <Text style={styles.whiteTxt}>{t === 'scanner' ? 'Scansiona' : t === 'generator' ? 'Genera' : 'Archivio'}</Text>
           </TouchableOpacity>
         ))}
       </View>
 
       {currentTab === 'generator' && (
         <ScrollView style={styles.pad}>
-          <TextInput style={styles.input} placeholder="Inserisci il link..." placeholderTextColor="#888" value={text} onChangeText={setText} />
+          <TextInput style={styles.input} placeholder="Inserisci il link o testo..." placeholderTextColor="#888" value={text} onChangeText={setText} />
           <View style={styles.row}>
             <TouchableOpacity style={[styles.badge, !isDynamic && styles.badgeAct]} onPress={() => setIsDynamic(false)}><Text style={styles.whiteTxt}>Statico</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.badge, isDynamic && styles.badgePro]} onPress={() => handlePremiumFeature(() => setIsDynamic(true))}><Text style={styles.whiteTxt}>🔗 Dinamico</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.badge, isDynamic && styles.badgePro]} onPress={() => handlePremiumFeature(() => setIsDynamic(true))}\><Text style={styles.whiteTxt}>🔗 Dinamico</Text></TouchableOpacity>
           </View>
           <View style={styles.row}>
             {['Generale', 'Lavoro', 'Social'].map(c => <TouchableOpacity key={c} style={[styles.badge, selectedCategory === c && styles.badgeAct]} onPress={() => handlePremiumFeature(() => setSelectedCategory(c))}><Text style={styles.whiteTxt}>{c}</Text></TouchableOpacity>)}
@@ -92,7 +106,7 @@ export default function App() {
 
       {currentTab === 'scanner' && (
         <View style={styles.scanBox}>
-          {hasPermission === true ? <CameraView onBarcodeScanned={scanned ? undefined : handleBarCodeScanned} style={StyleSheet.absoluteFillObject} /> : <Text style={styles.whiteTxt}>Nessun accesso alla fotocamera.</Text>}
+          {hasPermission === true ? <CameraView onBarcodeScanned={scanned ? undefined : handleBarCodeScanned} style={StyleSheet.absoluteFillObject} /> : <Text style={styles.whiteTxt}>Richiesta permessi fotocamera...</Text>}
           {scanned && <TouchableOpacity style={styles.btn} onPress={() => setScanned(false)}><Text style={styles.whiteTxt}>Scansiona ancora</Text></TouchableOpacity>}
         </View>
       )}
