@@ -3,8 +3,8 @@
     "react-native-paper": "*",
     "expo-camera": "*",
     "react-native-qrcode-svg": "*",
-    "react-native-svg": "*",
     "react-native-screens": "*",
-    "react-native-safe-area-context": "*"
+    "react-native-safe-area-context": "*",
+    "expo-screen-capture": "*"
   }
 }
