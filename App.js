@@ -14,7 +14,7 @@ export default function App() {
   const [history, setHistory] = useState([]);
   const [isPremium, setIsPremium] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
-  const [currentTab, setCurrentTab] = useState('scanner'); // Avvio prioritario sullo Scanner
+  const [currentTab, setCurrentTab] = useState('scanner'); 
   const [selectedCategory, setSelectedCategory] = useState('Generale');
   const [filterCategory, setFilterCategory] = useState('Tutti');
   const [isDynamic, setIsDynamic] = useState(false);
@@ -24,7 +24,7 @@ export default function App() {
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
     })();
-    ScreenCapture.preventScreenCaptureAsync(); // Blocca screenshot nativi
+    ScreenCapture.preventScreenCaptureAsync(); 
   }, []);
 
   const handleBarCodeScanned = ({ data }) => {
@@ -82,7 +82,7 @@ export default function App() {
           <TextInput style={styles.input} placeholder="Inserisci il link o testo..." placeholderTextColor="#888" value={text} onChangeText={setText} />
           <View style={styles.row}>
             <TouchableOpacity style={[styles.badge, !isDynamic && styles.badgeAct]} onPress={() => setIsDynamic(false)}><Text style={styles.whiteTxt}>Statico</Text></TouchableOpacity>
-            <TouchableOpacity style={[styles.badge, isDynamic && styles.badgePro]} onPress={() => handlePremiumFeature(() => setIsDynamic(true))}\><Text style={styles.whiteTxt}>🔗 Dinamico</Text></TouchableOpacity>
+            <TouchableOpacity style={[styles.badge, isDynamic && styles.badgePro]} onPress={() => handlePremiumFeature(() => setIsDynamic(true))}><Text style={styles.whiteTxt}>🔗 Dinamico</Text></TouchableOpacity>
           </View>
           <View style={styles.row}>
             {['Generale', 'Lavoro', 'Social'].map(c => <TouchableOpacity key={c} style={[styles.badge, selectedCategory === c && styles.badgeAct]} onPress={() => handlePremiumFeature(() => setSelectedCategory(c))}><Text style={styles.whiteTxt}>{c}</Text></TouchableOpacity>)}
