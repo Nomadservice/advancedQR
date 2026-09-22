@@ -1,1 +1,10 @@
-json\n{\n \"dependencies\": {\n \"react-native-paper\": \"*\",\n \"lucide-react-native\": \"*\",\n \"expo-camera\": \"~17.0.10\",\n \"react-native-qrcode-svg\": \"*\",\n \"@react-navigation/native\": \"*\",\n \"@react-navigation/native-stack\": \"*\",\n \"@react-navigation/bottom-tabs\": \"*\",\n \"react-native-screens\": \"*\",\n \"react-native-safe-area-context\": \"*\"\n }\n}\n
+{
+  "dependencies": {
+    "react-native-paper": "*",
+    "lucide-react-native": "*",
+    "expo-camera": "~17.0.10",
+    "react-native-qrcode-svg": "*",
+    "react-native-screens": "*",
+    "react-native-safe-area-context": "*"
+  }
+}
