@@ -1,0 +1,22 @@
+steps:
+  # 1. Installa i pacchetti e le dipendenze di React Native ed Expo
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['install']
+
+  # 2. Installa EAS CLI globalmente e lancia la build dell'app nel Cloud di Expo
+  - name: 'node:18'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        npm install -g eas-cli
+        # Sostituisci "preview" con "production" quando vorrai l'AAB per il Play Store
+        eas build --platform android --profile preview --non-interactive
+    secretEnv: ['EXPO_TOKEN']
+
+# Recupera in modo sicuro il token di Expo salvato su Google Cloud
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/EXPO_TOKEN/versions/latest
+      env: 'EXPO_TOKEN'
