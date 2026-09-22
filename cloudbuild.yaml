@@ -4,7 +4,7 @@ steps:
     entrypoint: 'npm'
     args: ['install']
 
-  # 2. Configura e lancia la build con collegamento automatico
+  # 2. Configura e lancia la build con collegamento automatico e account esplicito
   - name: 'node:20'
     entrypoint: 'bash'
     args:
@@ -12,8 +12,8 @@ steps:
       - |
         npm install -g eas-cli
         
-        # Crea automaticamente il progetto su Expo se non esiste
-        eas project:init --non-interactive || true
+        # Inizializza il progetto specificando il tuo account primario di Expo
+        eas project:init --account nomadservice --non-interactive || true
         
         # Avvia la build dell'APK di test
         eas build --platform android --profile preview --non-interactive
