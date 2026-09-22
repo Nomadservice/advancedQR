@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { Camera } from 'expo-camera';
+import { Camera, CameraView } from 'expo-camera';
 import QRCode from 'react-native-qrcode-svg';
 
 export default function App() {
@@ -116,7 +116,12 @@ export default function App() {
         <View style={styles.scannerZone}>
           {hasPermission === null && <Text style={styles.textWhite}>Richiesta permesso fotocamera...</Text>}
           {hasPermission === false && <Text style={styles.textWhite}>Nessun accesso alla fotocamera.</Text>}
-          {hasPermission === true && <Camera onBarCodeScanned={scanned ? undefined : handleBarCodeScanned} style={StyleSheet.absoluteFillObject} />}
+          {hasPermission === true && (
+            <CameraView 
+              onBarcodeScanned={scanned ? undefined : handleBarCodeScanned} 
+              style={StyleSheet.absoluteFillObject} 
+            />
+          )}
           {scanned && (
             <TouchableOpacity style={styles.button} onPress={() => setScanned(false)}>
               <Text style={styles.buttonText}>Tappa per scansionare ancora</Text>
