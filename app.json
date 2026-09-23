@@ -5,11 +5,22 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#121212"
+    },
     "ios": {
       "supportsTablet": true
     },
     "android": {
-      "package": "com.nomadservice.advancedqr"
+      "package": "com.nomadservice.advancedqr",
+      "backgroundColor": "#121212",
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#121212"
+      }
     }
   }
 }
