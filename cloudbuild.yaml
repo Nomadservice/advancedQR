@@ -4,7 +4,7 @@ steps:
     entrypoint: 'npm'
     args: ['install']
 
-  # 2. Configura e lancia la build ufficiale su Expo
+  # 2. Configura e lancia la build ufficiale sul nuovo account Expo
   - name: 'node:20'
     entrypoint: 'bash'
     args:
@@ -12,14 +12,14 @@ steps:
       - |
         npm install -g eas-cli
         
-        # Sostituisci NUOVO_ACCOUNT_EXPO con il nome del nuovo profilo gratuito
-        eas project:init --account NUOVO_ACCOUNT_EXPO --non-interactive || true
+        # Inizializza il progetto sul nuovo account nomadservice2
+        eas project:init --account nomadservice2 --non-interactive || true
         
-        # Avvia la build dell'APK di test pulendo la cache
+        # Avvia la build dell'APK di test pulendo la vecchia cache rotta
         eas build --platform android --profile preview --non-interactive --clear-cache
     secretEnv: ['EXPO_TOKEN']
 
-# Recupera il token di Expo salvato su Google Cloud
+# Recupera il token sicuro da Secret Manager
 availableSecrets:
   secretManager:
     - versionName: projects/$PROJECT_ID/secrets/EXPO_TOKEN/versions/latest
