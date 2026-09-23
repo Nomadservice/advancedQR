@@ -4,6 +4,7 @@
     "slug": "advancedQR",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -16,9 +17,8 @@
     "android": {
       "package": "com.nomadservice.advancedqr",
       "backgroundColor": "#121212",
-      "splash": {
-        "image": "./assets/splash.png",
-        "resizeMode": "contain",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#121212"
       }
     }
