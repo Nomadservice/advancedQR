@@ -13,16 +13,32 @@ steps:
     entrypoint: 'npx'
     args: ['expo', 'prebuild', '--platform', 'android', '--no-install']
 
-  # 3. Rimuove in modo chirurgico solo la riga del plugin Facebook che fa crashare Gradle
+  # 3. Sovrascrive il file settings.gradle con una struttura standard compatibile al 100% con Google Cloud
   - name: 'gcr.io/cloud-builders/gradle'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
         cd android
-        # Sostituisce la riga del plugin con uno spazio vuoto per non rompere il file
-        sed -i 's/id("com.facebook.react.settings")//g' settings.gradle
-        sed -i 's/id "com.facebook.react.settings"//g' settings.gradle
+        cat << 'EOF' > settings.gradle
+        pluginManagement {
+            repositories {
+                google()
+                mavenCentral()
+                gradlePluginPortal()
+            }
+        }
+        dependencyResolutionManagement {
+            repositoriesMode.set(RepositoriesMode.PRESERVE_EXISTING)
+            repositories {
+                google()
+                mavenCentral()
+            }
+        }
+        rootProject.name = 'advancedqr'
+        include ':app'
+        includeBuild('../node_modules/@react-native/gradle-plugin')
+        EOF
         ./gradlew assembleRelease
     dir: '.'
 
