@@ -4,7 +4,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import QRCode from 'react-native-qrcode-svg';
 import * as ScreenCapture from 'expo-screen-capture';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
 import { shareAsync } from 'expo-sharing';
 
 export default function App() {
@@ -24,7 +24,6 @@ export default function App() {
       if (!permission || !permission.granted) {
         await requestPermission();
       }
-      await MediaLibrary.requestPermissionsAsync();
     })();
     loadHistory();
     ScreenCapture.preventScreenCaptureAsync(); 
@@ -53,10 +52,10 @@ export default function App() {
       'QR Scansionato',
       data,
       [
-        { text: 'Apri Link / Copia', onPress: () => {
+        { text: 'Apri Link', onPress: () => {
           Linking.canOpenURL(data).then(supported => {
             if (supported) Linking.openURL(data);
-            else Alert.alert("Testo copiato", data);
+            else Alert.alert("Contenuto QR", data);
           });
         }},
         { text: 'OK', onPress: () => setScanned(false) }
@@ -75,13 +74,11 @@ export default function App() {
     if (svgRef.current) {
       svgRef.current.toDataURL(async (dataURL) => {
         try {
-          const fs = require('expo-file-system');
-          const filename = `${fs.documentDirectory}qr_${Date.now()}.png`;
-          await fs.writeAsStringAsync(filename, dataURL, { encoding: fs.EncodingType.Base64 });
+          const filename = `${FileSystem.documentDirectory}qr_${Date.now()}.png`;
+          await FileSystem.writeAsStringAsync(filename, dataURL, { encoding: FileSystem.EncodingType.Base64 });
           await shareAsync(filename);
-          Alert.alert("Successo", "QR salvato o condiviso correttamente!");
         } catch (e) {
-          Alert.alert("Errore", "Impossibile salvare il file multimediale.");
+          Alert.alert("Errore", "Impossibile esportare l'immagine.");
         }
       });
     }
@@ -117,7 +114,7 @@ export default function App() {
                 <View style={styles.row}>
                   {['#000000', '#FF5733', '#1A5F7A', '#57C5B6', '#8B5CF6'].map(col => <TouchableOpacity key={col} style={[styles.circle, { backgroundColor: col }, qrColor === col && styles.selCircle]} onPress={() => setQrColor(col)} />)}
                 </View>
-                <TouchableOpacity style={styles.btn} onPress={handleExport}><Text style={styles.whiteTxt}>💾 Esporta ed Invia File PNG</Text></TouchableOpacity>
+                <TouchableOpacity style={styles.btn} onPress={handleExport}><Text style={styles.whiteTxt}>💾 Esporta / Condividi PNG</Text></TouchableOpacity>
               </View>
             </View>
           )}
