@@ -1,47 +1,63 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 
 export function Paywall({ setIsPremium, setShowPaywall, onWatchAd }) {
   return (
-    <View style={styles.paywall}>
-      <Text style={styles.paywallTitle}>⚡ Passa a Advanced QR Pro ⚡</Text>
-      <Text style={styles.paywallSub}>Sblocca colori, loghi, QR dinamici e archivio illimitato</Text>
+    <ScrollView contentContainerStyle={styles.centerScroll} style={styles.paywall}>
+      <Text style={styles.paywallTitle}>⚡ ADVANCED QR PRO 👑</Text>
+      <Text style={styles.paywallSub}>Sblocca il pieno potenziale commerciale e grafico della tua applicazione</Text>
       
-      {['🎨 Cambia colori e aggiungi Loghi', '🔗 Crea QR Dinamici modificabili', '📁 Archivio illimitato con Categorie', '💾 Esportazione in Alta Risoluzione SVG'].map((f, i) => (
-        <Text key={i} style={styles.feat}>{f}</Text>
-      ))}
+      {/* Box dei Vantaggi con Bordi Arrotondati Moderni */}
+      <View style={styles.featuresBox}>
+        {[
+          '🎨 Cambia colori e aggiungi Loghi Centrali', 
+          '🔗 Crea QR Dinamici permanenti (Senza Scadenza)', 
+          '📁 Archivio dati illimitato con suddivisione Categorie', 
+          '💾 Scarica ed esporta i file direttamente in Galleria (PNG)'
+        ].map((f, i) => (
+          <View key={i} style={styles.featRow}>
+            <Text style={styles.feat}>{f}</Text>
+          </View>
+        ))}
+      </View>
       
+      {/* Pulsante Pubblicità Temporanea */}
       <TouchableOpacity style={styles.adBtn} onPress={onWatchAd}>
-        <Text style={styles.adBtnT}>📺 Sblocca una funzione GRATIS guardando un Video</Text>
+        <Text style={styles.adBtnT}>📺 Sblocca funzioni Pro per questa sessione (Vedi Video)</Text>
       </TouchableOpacity>
 
+      {/* Pulsanti Abbonamento di Lusso Arrotondati */}
       <TouchableOpacity style={styles.pBtn} onPress={() => { setIsPremium(true); setShowPaywall(false); }}>
-        <Text style={styles.pBtnT}>Mensile - 1,99 € / mese (3gg gratis)</Text>
+        <Text style={styles.pBtnT}>Mensile — 1,99 € / mese (3gg gratis)</Text>
       </TouchableOpacity>
       
       <TouchableOpacity style={styles.pBtn} onPress={() => { setIsPremium(true); setShowPaywall(false); }}>
-        <Text style={styles.pBtnT}>Annuale - 14,99 € / anno</Text>
+        <Text style={styles.pBtnT}>Annuale — 14,99 € / anno</Text>
       </TouchableOpacity>
       
       <TouchableOpacity style={styles.pBtn} onPress={() => { setIsPremium(true); setShowPaywall(false); }}>
-        <Text style={styles.pBtnT}>Sblocco a Vita - 24,99 €</Text>
+        <Text style={styles.pBtnT}>Sblocco a Vita — 24,99 €</Text>
       </TouchableOpacity>
       
-      <TouchableOpacity onPress={() => setShowPaywall(false)}>
-        <Text style={styles.closeTxt}>Continua Limitato</Text>
+      <TouchableOpacity style={styles.closeBtn} onPress={() => setShowPaywall(false)}>
+        <Text style={styles.closeTxt}>Continua con la versione limitata</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  paywall: { flex: 1, backgroundColor: '#1A1A2E', padding: 25, justifyContent: 'center' },
-  paywallTitle: { fontSize: 24, fontWeight: 'bold', color: '#FFD700', textAlign: 'center', marginBottom: 10 },
-  paywallSub: { fontSize: 14, color: '#E0E0E0', textAlign: 'center', marginBottom: 20 },
-  feat: { fontSize: 14, color: '#FFF', marginBottom: 10 },
-  pBtn: { backgroundColor: '#FFD700', padding: 12, borderRadius: 8, marginBottom: 10, alignItems: 'center' },
-  pBtnT: { fontSize: 14, fontWeight: 'bold', color: '#000' },
-  adBtn: { backgroundColor: '#4CAF50', padding: 14, borderRadius: 8, marginBottom: 15, alignItems: 'center', borderWidth: 2, borderColor: '#FFF' },
-  adBtnT: { fontSize: 14, fontWeight: 'bold', color: '#FFF' },
-  closeTxt: { color: '#AAA', textDecorationLine: 'underline', textAlign: 'center', marginTop: 10 }
+  paywall: { flex: 1, backgroundColor: '#0B0F19', paddingHorizontal: 20 },
+  centerScroll: { justifyContent: 'center', paddingVertical: 40 },
+  paywallTitle: { fontSize: 26, fontWeight: '900', color: '#D4AF37', textAlign: 'center', marginBottom: 10, letterSpacing: 1 },
+  paywallSub: { fontSize: 14, color: '#A0AEC0', textAlign: 'center', marginBottom: 25, lineHeight: 20, paddingHorizontal: 10 },
+  featuresBox: { backgroundColor: '#161B26', padding: 20, borderRadius: 18, marginBottom: 25, borderWidth: 1, borderColor: '#2D3748' },
+  featRow: { paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#20293A' },
+  feat: { fontSize: 14, color: '#E2E8F0', fontWeight: '600' },
+  pBtn: { backgroundColor: '#D4AF37', padding: 16, borderRadius: 14, marginBottom: 12, alignItems: 'center', shadowColor: '#D4AF37', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 5 },
+  pBtnT: { fontSize: 15, fontWeight: '700', color: '#0B0F19' },
+  adBtn: { backgroundColor: '#161B26', padding: 16, borderRadius: 14, marginBottom: 15, alignItems: 'center', borderWidth: 1, borderColor: '#00ADB5' },
+  adBtnT: { fontSize: 14, fontWeight: '700', color: '#00ADB5' },
+  closeBtn: { marginTop: 15, paddingVertical: 10, alignItems: 'center' },
+  closeTxt: { color: '#718096', textDecorationLine: 'underline', fontWeight: '600' }
 });
