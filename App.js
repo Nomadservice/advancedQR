@@ -4,7 +4,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ScreenCapture from 'expo-screen-capture';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Paywall } from './PremiumFeatures'; 
-import QRGenerator from './QRGenerator'; // Importiamo la seconda parte
+import QRGenerator from './QRGenerator'; // <- ADESSO È AGGANCIATO CORRETTAMENTE!
 
 export default function App() {
   const [permission, requestPermission] = useCameraPermissions();
