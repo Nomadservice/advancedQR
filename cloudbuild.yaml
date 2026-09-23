@@ -9,13 +9,5 @@ steps:
       - '-c'
       - |
         npm install -g eas-cli
+        export EXPO_TOKEN="6jPpG1F9dOmnTzofwzauMXykP7FIePm1wYcc64yk"
         eas build --platform android --profile preview --non-interactive --clear-cache
-    secretEnv: ['EXPO_TOKEN']
-
-availableSecrets:
-  secretManager:
-    - versionName: projects/$PROJECT_ID/secrets/EXPO_TOKEN/versions/latest
-      env: 'EXPO_TOKEN'
-
-options:
-  logging: CLOUD_LOGGING_ONLY
