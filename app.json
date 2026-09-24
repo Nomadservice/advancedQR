@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "advancedqr",
+    "name": "advancedQR",
     "slug": "advancedqr",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,11 +19,6 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#121212"
-      }
-    },
-    "extra": {
-      "eas": {
-        "projectId": "ceb0add0-6433-40d3-bad3-e957c66dad95"
       }
     }
   }
