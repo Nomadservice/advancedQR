@@ -10,7 +10,6 @@ steps:
       - |
         npm install -g eas-cli
         export EXPO_TOKEN="6jPpG1F9dOmnTzofwzauMXykP7FIePm1wYcc64yk"
-        export EAS_TOKEN="6jPpG1F9dOmnTzofwzauMXykP7FIePm1wYcc64yk"
         eas build --platform android --profile preview --non-interactive --clear-cache
 
 options:
