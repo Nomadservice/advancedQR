@@ -9,11 +9,7 @@ steps:
       - '-c'
       - |
         npm install -g eas-cli
-        export EXPO_TOKEN="6jPpG1F9dOmnTzofwzauMXykP7FIePm1wYcc64yk"
-        
-        # Sincronizza lo slug e l'account in modo automatico senza conflitti di permessi
-        eas project:init --account nomadservice2 --non-interactive || true
-        
+        eas login --username "nomadservice2" --password "Loneliness101"
         eas build --platform android --profile preview --non-interactive --clear-cache
 
 options:
