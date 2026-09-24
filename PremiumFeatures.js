@@ -7,7 +7,6 @@ export function Paywall({ setIsPremium, setShowPaywall, onWatchAd }) {
       <Text style={styles.paywallTitle}>⚡ ADVANCED QR PRO 👑</Text>
       <Text style={styles.paywallSub}>Sblocca il pieno potenziale commerciale e grafico della tua applicazione</Text>
       
-      {/* Box dei Vantaggi con Bordi Arrotondati Moderni */}
       <View style={styles.featuresBox}>
         {[
           '🎨 Cambia colori e aggiungi Loghi Centrali', 
@@ -21,12 +20,10 @@ export function Paywall({ setIsPremium, setShowPaywall, onWatchAd }) {
         ))}
       </View>
       
-      {/* Pulsante Pubblicità Temporanea */}
       <TouchableOpacity style={styles.adBtn} onPress={onWatchAd}>
         <Text style={styles.adBtnT}>📺 Sblocca funzioni Pro per questa sessione (Vedi Video)</Text>
       </TouchableOpacity>
 
-      {/* Pulsanti Abbonamento di Lusso Arrotondati */}
       <TouchableOpacity style={styles.pBtn} onPress={() => { setIsPremium(true); setShowPaywall(false); }}>
         <Text style={styles.pBtnT}>Mensile — 1,99 € / mese (3gg gratis)</Text>
       </TouchableOpacity>
