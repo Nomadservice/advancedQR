@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "advancedQR",
-    "slug": "advancedQR",
+    "name": "advancedqr",
+    "slug": "advancedqr",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
