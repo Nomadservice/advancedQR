@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   featuresBox: { backgroundColor: '#161B26', padding: 20, borderRadius: 18, marginBottom: 25, borderWidth: 1, borderColor: '#2D3748' },
   featRow: { paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#20293A' },
   feat: { fontSize: 14, color: '#E2E8F0', fontWeight: '600' },
-  pBtn: { backgroundColor: '#D4AF37', padding: 16, borderRadius: 14, marginBottom: 12, alignItems: 'center', shadowColor: '#D4AF37', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 5 },
+  pBtn: { backgroundColor: '#D4AF37', padding: 16, borderRadius: 14, marginBottom: 12, alignItems: 'center' },
   pBtnT: { fontSize: 15, fontWeight: '700', color: '#0B0F19' },
   adBtn: { backgroundColor: '#161B26', padding: 16, borderRadius: 14, marginBottom: 15, alignItems: 'center', borderWidth: 1, borderColor: '#00ADB5' },
   adBtnT: { fontSize: 14, fontWeight: '700', color: '#00ADB5' },
