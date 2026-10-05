@@ -9,6 +9,7 @@ steps:
       - '-c'
       - |
         npm install -g eas-cli
+        export NODE_ENV=production
         eas build --platform android --profile preview --non-interactive --clear-cache
     secretEnv: ['EXPO_TOKEN']
 
