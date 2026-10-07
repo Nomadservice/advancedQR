@@ -53,7 +53,6 @@ export default function QRGenerator({ isPremium, hasAdReward, setHasAdReward, se
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect:,
         quality: 1,
       });
 
@@ -160,7 +159,7 @@ const styles = StyleSheet.create({
   colorRow: { flexDirection: 'row', marginBottom: 25 },
   colorDot: { width: 40, height: 40, borderRadius: 20, marginRight: 15, borderWidth: 3, borderColor: '#141929' },
   colorDotAct: { borderColor: '#00ADB5' },
-  qrBox: { marginTop: 10, alignItems: 'center', backgroundColor: '#FFF', padding: 24, borderRadius: 24, width: 228, alignSelf: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.15, shadowRadius: 10 },
+  qrBox: { marginTop: 10, alignItems: 'center', backgroundColor: '#FFF', padding: 24, borderRadius: 24, width: 228, alignSelf: 'center' },
   emptyBox: { marginTop: 10, height: 228, borderStyle: 'dashed', borderWidth: 2, borderColor: '#1F273D', borderRadius: 24, justifyContent: 'center', alignItems: 'center', padding: 20 },
   emptyText: { color: '#4E5D78', textAlign: 'center', fontSize: 14, fontWeight: '600' }
 });
