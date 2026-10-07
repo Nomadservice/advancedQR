@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, Linking, Modal } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Linking, Modal } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ScreenCapture from 'expo-screen-capture';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,6 +16,7 @@ export default function App() {
   const [hasAdReward, setHasAdReward] = useState(false); 
   const [showPaywall, setShowPaywall] = useState(false); 
   const [currentTab, setCurrentTab] = useState('scanner'); 
+  const [customAlert, setCustomAlert] = useState({ visible: false, title: '', message: '', type: 'info' });
 
   useEffect(() => {
     (async () => {
@@ -26,6 +27,10 @@ export default function App() {
     loadHistory();
     ScreenCapture.preventScreenCaptureAsync(); 
   }, []);
+
+  const triggerAlert = (title, message, type = 'info') => {
+    setCustomAlert({ visible: true, title, message, type });
+  };
 
   const loadHistory = async () => {
     try {
@@ -44,7 +49,7 @@ export default function App() {
   const handleBarCodeScanned = ({ data }) => {
     setScanned(true);
     if (data.includes('qr-pro-dynamic/free-') && !isPremium) {
-      Alert.alert("Link Scaduto", "Questo codice QR dinamico temporaneo è scaduto. Passa a Premium per sbloccarlo.");
+      triggerAlert("Link Scaduto", "Questo codice QR dinamico temporaneo è scaduto. Passa a Premium per sbloccarlo.", 'error');
       setScanned(false);
       return;
     }
@@ -59,20 +64,9 @@ export default function App() {
   };
 
   const handleWatchAd = () => {
-    Alert.alert(
-      "📢 Annuncio Sponsorizzato",
-      "Riproduzione del video in corso (15s)...",
-      [
-        {
-          text: "Completa e Riscatta",
-          onPress: () => {
-            setHasAdReward(true); 
-            setShowPaywall(false);
-            Alert.alert("🔋 Gettone Riscatto", "Hai sbloccato UNA singola operazione Pro con la pubblicità!");
-          }
-        }
-      ]
-    );
+    setHasAdReward(true); 
+    setShowPaywall(false);
+    triggerAlert("🔋 Gettone Riscatto", "Hai sbloccato UNA singola operazione Pro con la pubblicità!", 'success');
   };
 
   if (showPaywall) {
@@ -103,6 +97,7 @@ export default function App() {
           setShowPaywall={setShowPaywall} 
           history={history} 
           saveHistory={saveHistory} 
+          triggerAlert={triggerAlert}
         />
       )}
 
@@ -117,8 +112,20 @@ export default function App() {
       )}
 
       {currentTab === 'history' && (
-        <HistoryManager history={history} saveHistory={saveHistory} />
+        <HistoryManager history={history} saveHistory={saveHistory} triggerAlert={triggerAlert} />
       )}
+
+      <Modal animated transparent visible={customAlert.visible} onRequestClose={() => setCustomAlert({ ...customAlert, visible: false })}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { borderColor: customAlert.type === 'error' ? '#FF5C5C' : customAlert.type === 'success' ? '#20BF6B' : '#2F3B5C' }]}>
+            <Text style={[styles.modalTitle, { color: customAlert.type === 'error' ? '#FF5C5C' : customAlert.type === 'success' ? '#20BF6B' : '#00ADB5' }]}>{customAlert.title}</Text>
+            <Text style={styles.modalData}>{customAlert.message}</Text>
+            <TouchableOpacity style={styles.modalBtnClose} onPress={() => setCustomAlert({ ...customAlert, visible: false })}>
+              <Text style={styles.modalBtnCloseT}>Ok</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       <Modal animated transparent visible={scanned && currentTab === 'scanner'} onRequestClose={() => setScanned(false)}>
         <View style={styles.modalOverlay}>
@@ -126,7 +133,7 @@ export default function App() {
             <Text style={styles.modalTitle}>CONTENUTO RILEVATO</Text>
             <Text style={styles.modalData}>{scanResult}</Text>
             <View style={styles.modalRow}>
-              <TouchableOpacity style={styles.modalBtnAct} onPress={() => { setScanned(false); Linking.openURL(scanResult).catch(() => Alert.alert("Testo", scanResult)); }}>
+              <TouchableOpacity style={styles.modalBtnAct} onPress={() => { setScanned(false); Linking.openURL(scanResult).catch(() => triggerAlert("Oops", "Impossibile aprire il testo come URL", "info")); }}>
                 <Text style={styles.modalBtnActT}>Apri Link</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.modalBtnClose} onPress={() => setScanned(false)}>
@@ -154,11 +161,11 @@ const styles = StyleSheet.create({
   scanBox: { flex: 1, backgroundColor: '#000', marginBottom: 20, marginHorizontal: 20, borderRadius: 24, overflow: 'hidden' },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(5,8,18,0.85)', justifyContent: 'center', alignItems: 'center', padding: 20 },
   modalContent: { backgroundColor: '#141929', width: '100%', borderRadius: 24, padding: 24, borderWidth: 1, borderColor: '#2F3B5C', alignItems: 'center' },
-  modalTitle: { color: '#00ADB5', fontSize: 13, fontWeight: '800', letterSpacing: 1.5, marginBottom: 15 },
+  modalTitle: { fontSize: 13, fontWeight: '800', letterSpacing: 1.5, marginBottom: 15 },
   modalData: { color: '#FFF', fontSize: 16, textAlign: 'center', marginBottom: 25, lineHeight: 22 },
   modalRow: { flexDirection: 'row', width: '100%' },
   modalBtnAct: { flex: 1, backgroundColor: '#00ADB5', padding: 16, borderRadius: 16, alignItems: 'center', marginRight: 10 },
   modalBtnActT: { color: '#FFF', fontWeight: '700' },
-  modalBtnClose: { flex: 1, backgroundColor: '#1F273D', padding: 16, borderRadius: 16, alignItems: 'center' },
+  modalBtnClose: { flex: 1, backgroundColor: '#1F273D', padding: 16, borderRadius: 16, alignItems: 'center', minWidth: 100 },
   modalBtnCloseT: { color: '#A0AEC0', fontWeight: '700' }
 });
