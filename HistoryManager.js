@@ -1,26 +1,19 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Modal } from 'react-native';
 
 export default function HistoryManager({ history, saveHistory }) {
   const [archiveTab, setArchiveTab] = useState('scanned'); 
+  const [confirmModal, setConfirmModal] = useState({ visible: false, type: '' });
 
-  const clearHistory = (typeToRemove) => {
-    Alert.alert(
-      "Svuota Archivio",
-      `Vuoi davvero eliminare tutti i codici ${typeToRemove === 'Scansionato' ? 'scansionati' : 'generati'}?`,
-      [
-        { text: "Annulla", style: "cancel" },
-        { text: "Elimina", style: "destructive", onPress: () => {
-          let filtered;
-          if (typeToRemove === 'Scansionato') {
-            filtered = history.filter(h => h.type !== 'Scansionato');
-          } else {
-            filtered = history.filter(h => h.type !== 'Statico' && h.type !== 'Dinamico');
-          }
-          saveHistory(filtered);
-        }}
-      ]
-    );
+  const executeClear = () => {
+    let filtered;
+    if (confirmModal.type === 'Scansionato') {
+      filtered = history.filter(h => h.type !== 'Scansionato');
+    } else {
+      filtered = history.filter(h => h.type !== 'Statico' && h.type !== 'Dinamico');
+    }
+    saveHistory(filtered);
+    setConfirmModal({ visible: false, type: '' });
   };
 
   return (
@@ -45,7 +38,7 @@ export default function HistoryManager({ history, saveHistory }) {
             ))}
             {history.filter(h => h.type === 'Scansionato').length === 0 && <Text style={styles.emptyTxt}>Nessun codice scansionato.</Text>}
             {history.filter(h => h.type === 'Scansionato').length > 0 && (
-              <TouchableOpacity style={styles.clearBtn} onPress={() => clearHistory('Scansionato')}>
+              <TouchableOpacity style={styles.clearBtn} onPress={() => setConfirmModal({ visible: true, type: 'Scansionato' })}>
                 <Text style={styles.clearBtnT}>Svuota Scansionati</Text>
               </TouchableOpacity>
             )}
@@ -60,15 +53,32 @@ export default function HistoryManager({ history, saveHistory }) {
                 <Text style={styles.cardData} numberOfLines={1}>{h.data}</Text>
               </View>
             ))}
-            {history.filter(h => h.type === 'Statico' || h.type === 'Dinamico').length === 0 && <Text style={styles.emptyTxt}>Nessun codice generato.</Text>}
+            {history.filter(h => h.type === 'Statico' || h.type === 'Dinamico').length === 0 && <Text style={styles.emptyTxt}>Nessun codice salvato.</Text>}
             {history.filter(h => h.type === 'Statico' || h.type === 'Dinamico').length > 0 && (
-              <TouchableOpacity style={styles.clearBtn} onPress={() => clearHistory('Generato')}>
+              <TouchableOpacity style={styles.clearBtn} onPress={() => setConfirmModal({ visible: true, type: 'Generato' })}>
                 <Text style={styles.clearBtnT}>Svuota Generati</Text>
               </TouchableOpacity>
             )}
           </>
         )}
       </ScrollView>
+
+      <Modal animated transparent visible={confirmModal.visible} onRequestClose={() => setConfirmModal({ visible: false, type: '' })}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>SVUOTA ARCHIVIO</Text>
+            <Text style={styles.modalData}>Vuoi davvero eliminare tutti i codici {confirmModal.type === 'Scansionato' ? 'scansionati' : 'generati'} in modo permanente?</Text>
+            <View style={styles.modalRow}>
+              <TouchableOpacity style={styles.modalBtnDelete} onPress={executeClear}>
+                <Text style={styles.modalBtnDeleteT}>Elimina</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalBtnClose} onPress={() => setConfirmModal({ visible: false, type: '' })}>
+                <Text style={styles.modalBtnCloseT}>Annulla</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -84,5 +94,14 @@ const styles = StyleSheet.create({
   cardData: { color: '#FFF', fontSize: 14 },
   emptyTxt: { color: '#4E5D78', textAlign: 'center', marginTop: 30, fontSize: 14, fontWeight: '600' },
   clearBtn: { backgroundColor: '#291419', padding: 14, borderRadius: 16, alignItems: 'center', marginTop: 10, marginBottom: 30, borderWidth: 1, borderColor: '#4A1D24' },
-  clearBtnT: { color: '#FF5C5C', fontWeight: '700' }
+  clearBtnT: { color: '#FF5C5C', fontWeight: '700' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(5,8,18,0.85)', justifyContent: 'center', alignItems: 'center', padding: 20 },
+  modalContent: { backgroundColor: '#141929', width: '100%', borderRadius: 24, padding: 24, borderWidth: 1, borderColor: '#4A1D24', alignItems: 'center' },
+  modalTitle: { color: '#FF5C5C', fontSize: 13, fontWeight: '800', letterSpacing: 1.5, marginBottom: 15 },
+  modalData: { color: '#FFF', fontSize: 15, textAlign: 'center', marginBottom: 25, lineHeight: 22 },
+  modalRow: { flexDirection: 'row', width: '100%' },
+  modalBtnDelete: { flex: 1, backgroundColor: '#FF5C5C', padding: 16, borderRadius: 16, alignItems: 'center', marginRight: 10 },
+  modalBtnDeleteT: { color: '#FFF', fontWeight: '700' },
+  modalBtnClose: { flex: 1, backgroundColor: '#1F273D', padding: 16, borderRadius: 16, alignItems: 'center' },
+  modalBtnCloseT: { color: '#A0AEC0', fontWeight: '700' }
 });
